@@ -9,6 +9,12 @@
         <label for="qtd" class="">Quantidade</label>
         <input type="text" class="rounded p-2" id="qtd" v-model="qtd" placeholder="Digite a quatidade de copias">
       </div>
+      <select @focus="searchMachines" class="rounded p-2" v-model="ip">
+        <option :value="null" disabled selected>Selecione o IP</option>
+        <option v-for="ip in ips" :key="ip.ip" :value="ip.ip">
+          {{ ip.ip }}
+        </option>
+      </select>
       <select class="rounded p-2" v-model="os">
         <option :value="null" disabled selected>Selecione o Sistema Operacional</option>
         <option v-for="system in oss" :key="system.value" :value="system.value">
@@ -39,10 +45,10 @@
 import {onMounted, ref} from 'vue'
 import axios from "axios";
 
-
 const img = ref('')
 const qtd = ref('')
 const os = ref(null)
+const ip = ref(null)
 const oss = ref(
   [
     { name: 'Windows', value: 'win' },
@@ -50,9 +56,10 @@ const oss = ref(
     { name: 'Mac', value: 'mac' },
   ]
 )
-
+const ips = ref([])
 const printer = ref(null)
-
+const showModal = ref(false)
+const printers = ref([])
 const send = async () => {
   const params = new URLSearchParams();
   params.append('image', img.value);
@@ -60,28 +67,25 @@ const send = async () => {
   params.append('os', os.value);
   params.append('printer', printer.value);
 
-  await axios.post('http://192.168.1.35:8080/print', params)
+  await axios.post('http://'+ip.value+':8080/print', params)
       .catch((err) => {
         console.log(err);
       });
 };
-
-onMounted(async () => {
+const searchMachines  = async () => {
   await axios.get('/api/machines').catch((err) => {
     console.log(err)
   }).then((res) => {
+    ips.value = res.data
     console.log(res)
   })
-})
-
-const showModal = ref(false)
-const printers = ref([])
+}
 const openModal = () => {
   showModal.value = !showModal.value
 }
 
 const searchPrinters = async () => {
-  await axios.get('http://192.168.1.35:8080/printers?os='+os.value).catch((err) => {
+  await axios.get('http://'+ip.value+':8080/printers?os='+os.value).catch((err) => {
     console.log(err)
   }).then((res) => {
     openModal()

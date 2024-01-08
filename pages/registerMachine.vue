@@ -7,15 +7,15 @@
       </div>
       <div class="flex flex-col">
         <label for="img" class="">IP</label>
-        <input type="text" class="rounded p-2" id="img" v-model="ip" placeholder="Digite a imagem">
+        <input type="text" class="rounded p-2" id="img" v-model="ip" placeholder="Digite o IP">
       </div>
       <div class="flex flex-col">
         <label for="qtd" class="">Nome</label>
-        <input type="text" class="rounded p-2" id="qtd" v-model="name" placeholder="Digite a quatidade de copias">
+        <input type="text" class="rounded p-2" id="qtd" v-model="name" placeholder="Digite o Nome">
       </div>
       <div class="flex flex-col">
         <label for="qtd" class="">Localização</label>
-        <input type="text" class="rounded p-2" id="qtd" v-model="location" placeholder="Digite a quatidade de copias">
+        <input type="text" class="rounded p-2" id="qtd" v-model="location" placeholder="Digite a localização">
       </div>
       <button @click="saveLocation" class="bg-black text-white p-2 rounded">Salvar Máquina</button>
     </div>
@@ -26,13 +26,16 @@
 import { ref } from 'vue'
 import axios from "axios";
 
-
 const ip = ref('')
 const name = ref('')
 const location = ref('')
 
 const saveLocation = async () => {
-  await axios.post('/machines').catch((err) => {
+  await axios.post('/api/machines',{
+    ip: ip.value,
+    name: name.value,
+    location: location.value
+  }).catch((err) => {
     console.log(err)
   }).then((res) => {
     console.log(res)

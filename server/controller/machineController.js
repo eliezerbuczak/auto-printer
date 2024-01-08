@@ -8,11 +8,12 @@ export const searchMachine = async () => {
     })
 };
 export const saveMachine = async (event) => {
-    console.log(event);
+    const request = await readBody(event);
+    const { ip, name, location } = request;
     return await new Promise((resolve, reject) => {
-        db.run("INSERT INTO machines (ip,name,location) VALUES (?,?,?)", ["test"], (err) => {
+        db.run(`INSERT INTO machines (ip, name, location) VALUES (?, ?, ?)`, [ip, name, location], (err) => {
             if (err) reject(err);
-            resolve();
+            resolve({ id: this.lastID });
         });
     })
 };
